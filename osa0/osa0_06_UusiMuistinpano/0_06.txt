@@ -1,0 +1,16 @@
+note over Selain:
+TALLETA
+end note
+
+Selain->Palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa {content: "note", date: "date"}
+
+note over Palvelin
+Palvelin tallentaa muistiinpanon
+end note
+
+Palvelin-->Selain: {"message":"note created"}
+
+note over Selain:
+Listään lähetetty muistiinpano
+selaimen listalle
+end note

@@ -13,4 +13,4 @@ Palvelin-->Selain: {"message":"note created"}
 note over Selain:
 Listään lähetetty muistiinpano
 selaimen listalle
-end note
+end note 

@@ -6,18 +6,34 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [voteCount, setVoteCount] = useState(0)
+  const [voteSum, setVoteSum] = useState(0)
+  const [avg, setAvg] = useState(0)
+  const [goodPerc, setGoodPerc] = useState(0)
+
+  const updateStats = (voteValue) =>{
+    setVoteCount(voteCount +1)
+    setVoteSum(voteSum + voteValue)
+    setAvg(voteSum/voteCount)
+    setGoodPerc(good/voteCount*100)
+  }
 
   const setToGood = (newValue) => {
     setGood(newValue)
+    updateStats(1)
   }
 
   const setToNeutral = (newValue) => {
     setNeutral(newValue)
+    updateStats(0)
   }
 
   const setToBad = (newValue) => {
     setBad(newValue)
+    updateStats(-1)
   }
+
+
 
   return (
     <div>
@@ -35,6 +51,7 @@ const App = () => {
         <p>hyvä {good}</p>
         <p>neutraali {neutral}</p>
         <p>huono {bad}</p>
+        <p>{voteCount} {voteSum} {avg} {goodPerc}</p>
     </div>
   )
 }

@@ -1,6 +1,60 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+const Statistics = ({good, neutral, bad}) => {
+    let total = good + neutral + bad
+    let voteValue = good - bad
+    let avg = 0
+    let goodPerc = 0
+
+    if (total>0){
+        avg = voteValue/total
+        goodPerc = good/total*100
+    }
+    if(total>0){
+        return(
+            <div>
+                <h1>statistiikka</h1>
+                <table>
+                    <tbody>
+                        <Statistic text="hyvä" value = {good}/>
+                        <Statistic text="neutraali" value = {neutral}/>
+                        <Statistic text="huono" value = {bad}/>
+                        <Statistic text="yhteensä" value = {total}/>
+                        <Statistic text="keskiarvo" value = {avg}/>
+                        <Statistic text="positiivisia" value = {goodPerc+" %"}/>
+                    </tbody>
+                </table>
+            </div> 
+        )
+    }else{
+        return(
+            <div>
+                <h1>statistiikka</h1>
+                <p>Ei yhtään palautetta annettu</p>
+            </div>
+        )
+    }
+
+}
+
+const Statistic = ({text, value}) =>{
+    return(
+        <tr>
+            <td>{text}</td>
+            <td>{value}</td>
+        </tr>
+    )
+}
+
+const Button = ({text, handleClick}) =>{
+    return(
+    <button onClick={handleClick}>
+        {text}
+    </button>
+    )
+} 
+
 const App = () => {
   // tallenna napit omaan tilaansa
   const [good, setGood] = useState(0)
@@ -19,24 +73,13 @@ const App = () => {
     setBad(newValue)
   }
 
-
-
   return (
     <div>
         <h1>anna palautetta</h1>
-        <button onClick={() => setToGood(good +1)}>
-            hyvä
-        </button>
-        <button onClick={() => setToNeutral(neutral +1)}>
-            neutraali
-        </button>
-        <button onClick={() => setToBad(bad +1)}>
-            huono
-        </button>
-        <h1>statistiikka</h1>
-        <p>hyvä {good}</p>
-        <p>neutraali {neutral}</p>
-        <p>huono {bad}</p>
+        <Button text="hyvä" handleClick = {() => setToGood(good +1)}/>
+        <Button text="neutraali" handleClick = {() => setToNeutral(neutral +1)}/>
+        <Button text="huono" handleClick = {() => setToBad(bad +1)}/>
+        <Statistics good = {good} neutral = {neutral} bad={bad}/>
     </div>
   )
 }

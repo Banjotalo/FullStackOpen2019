@@ -1,50 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-
-const Header = ({name}) => {
-    return(
-        <h1>{name}</h1>
-    )
-}
-
-const Content = ({course}) => {
-    const getParts = () =>
-    course.parts.map(part => <Part key={part.id} part={part}/>)
-
-    return (
-        <div>
-           {getParts()}
-        </div>
-    )
-}
-
-
-const Part = ({part}) => {
-    return(
-        <p>
-            {part.name} {part.exercises}
-        </p>
-    )
-}
-
-const Course = ({course}) => {
-    return(
-        <div>
-            <Header name = {course.name}/>
-            <Content course={course}/>
-            <Total parts={course.parts}/>
-        </div>
-    )
-}
-
-const Total = ({parts}) => {
-    const total = parts.reduce((sum, part) => sum + part.exercises, 0)
-
-    return(
-        <p>yhteensä {total} tehtävää</p>
-    )
-}
-
+import Course from './components/Course'
 
 const App = () => {
     const courses = [
@@ -92,7 +48,7 @@ const App = () => {
   
     return (
       <div>
-        <Header name="Opetusohjelma"/>
+        <h1>Opetusohjelma</h1>
         {getCourses()}
       </div>
     )

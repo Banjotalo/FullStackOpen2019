@@ -1,5 +1,7 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+
 
 const PhoneList = ({persons}) => {
   const getPersons = () =>
@@ -86,6 +88,22 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('Arto')
+
+  useEffect(() => {
+    console.log('effect')
+  
+    const eventHandler = response => {
+      console.log('promise fulfilled')
+      console.log(response)
+      setPersons(response.data)
+    }
+  
+    const promise = axios.get('http://localhost:3001/persons')
+    promise.then(eventHandler)
+  }, [])
+
+
+
 
   const handleNewNameChange = (event) => {     
     setNewName(event.target.value)  

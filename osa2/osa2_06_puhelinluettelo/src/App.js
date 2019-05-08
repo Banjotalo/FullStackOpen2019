@@ -77,7 +77,6 @@ const FilterForm =({filterProps}) => {
       <p>numero:
       <input value={filterProps.newFilter} onChange={filterProps.handleNewFilterChange}/></p>
       <div>{getFilter()}</div>
-      
     </div>
   )
 

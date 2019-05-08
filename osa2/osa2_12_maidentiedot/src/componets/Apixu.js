@@ -7,13 +7,11 @@ const Apixu = ({city, apiKey}) => {
     const [ weather, setWeather] = useState()
     
     useEffect(() => {
-        console.log('apikey ', apiKey, ' city ', city)
         if(apiKey!==''){
             const eventHandler = response => {
                 setWeather(response.data)
             }
             const httpGet = `http://api.apixu.com/v1/current.json?key=${apiKey}&q=${city}`
-            console.log(httpGet)
         
             const promise = axios.get(httpGet)
             promise.then(eventHandler)
@@ -35,7 +33,7 @@ const Apixu = ({city, apiKey}) => {
         return(
         <div>
             <h3>Weather in {city}</h3>
-            <p>can't find...</p>
+            <p>...</p>
         </div>
         )
     }

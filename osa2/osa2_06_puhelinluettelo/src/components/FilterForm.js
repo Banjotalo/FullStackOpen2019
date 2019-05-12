@@ -1,7 +1,7 @@
 import React from 'react'
 import Person from './Person'
 
-const FilterForm =({filterFormProps, handleDeleteClick}) => {
+const FilterForm =({filterFormProps}) => {
 
     var filter = filterFormProps.persons.filter(person => {
       return person.name.toUpperCase().includes(filterFormProps.newFilter.toUpperCase())
@@ -9,7 +9,7 @@ const FilterForm =({filterFormProps, handleDeleteClick}) => {
   
     const getFilter = () =>
       filter.map(person => {
-        return <Person key={person.id} person={person} handleDeleteClick={() => handleDeleteClick(person.id)}/>
+        return <Person key={person.id} person={person} deletePerson={() => filterFormProps.deletePerson(person.id)}/>
       })
   
     return(

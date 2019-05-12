@@ -106,17 +106,17 @@ const App = () => {
   }
 
   const filterFormProps = {
-    persons, newFilter, setNewFilter, handleNewFilterChange
+    persons, newFilter, setNewFilter, handleNewFilterChange, deletePerson
   }
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
-      <FilterForm filterFormProps={filterFormProps} handleDeleteClick={deletePerson}/>
+      <FilterForm filterFormProps={filterFormProps}/>
       <h2>lisää henkilöitä</h2>
       <PersonForm personFormProps={personFormProps}/>
       <h2>Numerot</h2>
-      <PhoneList persons={persons} handleDeleteClick={deletePerson}/>
+      <PhoneList persons={persons} deletePerson={deletePerson}/>
     </div>
   )
 

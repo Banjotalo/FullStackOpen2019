@@ -24,7 +24,7 @@ const App = () => {
       })
   }, [])
 
-  //POST: lisätään uusi henkilö
+  //POST: lisätään/muutetaan henkilö
   const addPerson = (event) => {    
     event.preventDefault()
     const nameObject = {

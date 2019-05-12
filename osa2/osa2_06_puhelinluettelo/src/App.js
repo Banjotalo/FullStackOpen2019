@@ -1,109 +1,92 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 
+//komponentit
+import PersonForm from './components/PersonForm'
+import FilterForm from './components/FilterForm'
+import PhoneList from './components/PhoneList'
 
-const PhoneList = ({persons}) => {
-  const getPersons = () =>
-    persons.map(person => <Person key={person.name} person={person}/>)
-
-  return(
-    <div>
-      {getPersons()}
-    </div>
-  )
-}
-
-const Person = ({person}) => {
-  return(
-    <div>
-      {person.name} {person.number}
-    </div>
-  )  
-}
-
-const PersonForm = ({formProps}) => {
-
-  const addPerson = (event) => {    
-    event.preventDefault()
-    const nameObject = {
-      name: formProps.newName,
-      number: formProps.newNumber
-    }
-
-    var result = formProps.persons.find(person => {
-      return person.name.toUpperCase() === formProps.newName.toUpperCase()
-    })
-
-    if(result === undefined){
-      formProps.setPersons(formProps.persons.concat(nameObject))
-      formProps.setNewName('')
-      formProps.setNewNumber('')
-    }else{
-      window.alert(formProps.newName + ' on jo luettelossa')
-    }
- 
-  }
-
-  return(
-    <form onSubmit={addPerson}>
-       <div>
-        nimi: 
-        <input value={formProps.newName} onChange={formProps.handleNewNameChange}/> 
-         numero:
-        <input value={formProps.newNumber} onChange={formProps.handleNewNumberChange}/>
-      </div>
-       <div>
-        <button type="submit">lisää</button>
-      </div>
-    </form>    
-  )
-}
-
-const FilterForm =({filterProps}) => {
-
-
-  var filter = filterProps.persons.filter(person => {
-    return person.name.toUpperCase().includes(filterProps.newFilter.toUpperCase())
-  })
-
-  const getFilter = () =>
-    filter.map(person => {
-      return <Person key={person.name} person={person}/>
-    })
-
-  return(
-    <div>
-      <p>numero:
-      <input value={filterProps.newFilter} onChange={filterProps.handleNewFilterChange}/></p>
-      <div>{getFilter()}</div>
-    </div>
-  )
-
-}
+//palvelut
+import personService from './services/personDB'
  
 const App = () => {
   const [ persons, setPersons] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
-  const [ newFilter, setNewFilter ] = useState('Arto')
+  const [ newFilter, setNewFilter ] = useState('')
 
+  //GET: haetaan henkilöt
   useEffect(() => {
-    console.log('effect')
-  
-    const eventHandler = response => {
-      console.log('promise fulfilled')
-      console.log(response)
-      setPersons(response.data)
-    }
-  
-    const promise = axios.get('http://localhost:3001/persons')
-    promise.then(eventHandler)
+    personService
+      .selectAll()
+      .then(response => {
+        setPersons(response.data)
+      })
   }, [])
 
+  //POST: lisätään uusi henkilö
+  const addPerson = (event) => {    
+    event.preventDefault()
+    const nameObject = {
+      name: newName,
+      number: newNumber
+    }
 
+    var result = persons.find(person => {
+      return person.name.toUpperCase() === newName.toUpperCase()
+    })
 
+    if(result === undefined){
 
+    personService
+      .insertPerson(nameObject)
+        .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+        })
+
+    }else{
+      if(window.confirm(newName + ' on jo luettelossa, korvataanko vanha numero uudella?')){
+
+        //haetaan henkilön tiedot 
+        const resPerson = persons.find(person => {
+          return person.name === newName
+        })
+
+        personService.updatePerson(resPerson.id, nameObject)
+        .then(response => {
+          setPersons(persons.map(person => person.id !== resPerson.id ? person : response.data))
+          setNewName('')
+          setNewNumber('')
+          })
+      }
+    }
+ 
+  }
+
+  //DELETE: poistetaan henkilö
+  const deletePerson = (id) => {
+
+    //haetaan henkilön tiedot 
+    const resPerson = persons.find(person => {
+      return person.id === id
+    })
+
+    if (window.confirm(`poistetaanko henkilö ${resPerson.name}`)) { 
+      personService
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(n => n.id !== id))
+        })
+        .catch(error => {      
+          alert(`'${resPerson.name}' on jo poistettu palvelimelta`)      
+          setPersons(persons.filter(n => n.id !== id))
+        })
+    }
+  }
+
+  //formien tekstikenttien setterit
   const handleNewNameChange = (event) => {     
     setNewName(event.target.value)  
   }
@@ -116,32 +99,24 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
-  const formProps = {
-    persons: persons,
-    newName: newName,
-    newNumber: newNumber,
-    setPersons: setPersons,
-    setNewName: setNewName,
-    setNewNumber: setNewNumber,
-    handleNewNameChange: handleNewNameChange,
-    handleNewNumberChange: handleNewNumberChange
+  //kootaan komponenteille lähettävät propsit
+  const personFormProps = {
+    persons, newName, newNumber, setPersons, setNewName, addPerson,
+    setNewNumber, handleNewNameChange, handleNewNumberChange
   }
 
-  const filterProps = {
-    persons: persons,
-    newFilter: newFilter,
-    setNewFilter: setNewFilter,
-    handleNewFilterChange: handleNewFilterChange
+  const filterFormProps = {
+    persons, newFilter, setNewFilter, handleNewFilterChange
   }
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
-      <FilterForm filterProps={filterProps}/>
+      <FilterForm filterFormProps={filterFormProps} handleDeleteClick={deletePerson}/>
       <h2>lisää henkilöitä</h2>
-      <PersonForm formProps={formProps}/>
+      <PersonForm personFormProps={personFormProps}/>
       <h2>Numerot</h2>
-      <PhoneList persons={persons}/>
+      <PhoneList persons={persons} handleDeleteClick={deletePerson}/>
     </div>
   )
 

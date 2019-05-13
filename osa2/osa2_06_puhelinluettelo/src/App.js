@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import PersonForm from './components/PersonForm'
 import FilterForm from './components/FilterForm'
 import PhoneList from './components/PhoneList'
+import Notification from './components/Notification'
 
 //palvelut
 import personService from './services/personDB'
@@ -13,7 +14,21 @@ const App = () => {
   const [ persons, setPersons] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
-  const [ newFilter, setNewFilter ] = useState('')
+  const [ newFilter, setNewFilter ] = useState('nimi')
+  const [ notification, setNotification ] = useState([])
+
+  const setNewNotification = (message, styleClass, timeout) =>{
+    const newObject = {
+      message: message,
+      styleClass: styleClass
+    }
+    setNotification(newObject)
+
+    setTimeout(() => {
+      setNotification(null)
+    }, timeout)
+
+  }
 
   //GET: haetaan henkilöt
   useEffect(() => {
@@ -32,7 +47,7 @@ const App = () => {
       number: newNumber
     }
 
-    var result = persons.find(person => {
+    const result = persons.find(person => {
       return person.name.toUpperCase() === newName.toUpperCase()
     })
 
@@ -44,6 +59,7 @@ const App = () => {
         setPersons(persons.concat(response.data))
         setNewName('')
         setNewNumber('')
+        setNewNotification(`${response.data.name} lisätty onnistuneesti`, 'success', 5000)
         })
 
     }else{
@@ -59,6 +75,11 @@ const App = () => {
           setPersons(persons.map(person => person.id !== resPerson.id ? person : response.data))
           setNewName('')
           setNewNumber('')
+          setNewNotification(`${response.data.name} muokattiin onnistuneesti`, 'success', 5000)
+          })
+          .catch(error => {
+            setNewNotification(`${resPerson.name} on poistettu palvelimelta`, 'error', 5000)
+            setPersons(persons.filter(n => n.id !== resPerson.id))
           })
       }
     }
@@ -77,10 +98,11 @@ const App = () => {
       personService
         .deletePerson(id)
         .then(() => {
+          setNewNotification(`${resPerson.name} poistettiin onnistuneesti palvelimelta`, 'success', 5000)
           setPersons(persons.filter(n => n.id !== id))
         })
-        .catch(error => {      
-          alert(`'${resPerson.name}' on jo poistettu palvelimelta`)      
+        .catch(error => {
+          setNewNotification(`${resPerson.name} on jo poistettu palvelimelta`, 'error', 5000)
           setPersons(persons.filter(n => n.id !== id))
         })
     }
@@ -111,6 +133,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification notification={notification}/>
       <h1>Puhelinluettelo</h1>
       <FilterForm filterFormProps={filterFormProps}/>
       <h2>lisää henkilöitä</h2>

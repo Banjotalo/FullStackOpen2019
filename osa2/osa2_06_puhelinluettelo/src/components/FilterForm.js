@@ -14,7 +14,7 @@ const FilterForm =({filterFormProps}) => {
   
     return(
       <div>
-        <p>numero:
+        <p>hae nimellä:
         <input value={filterFormProps.newFilter} onChange={filterFormProps.handleNewFilterChange}/></p>
         <div>{getFilter()}</div>
       </div>

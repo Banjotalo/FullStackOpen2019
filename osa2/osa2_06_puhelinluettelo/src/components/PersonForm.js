@@ -7,10 +7,9 @@ const PersonForm = ({personFormProps}) => {
          <div>
           nimi: 
           <input value={personFormProps.newName} onChange={personFormProps.handleNewNameChange}/> 
-           numero:
+          numero:
           <input value={personFormProps.newNumber} onChange={personFormProps.handleNewNumberChange}/>
-        </div>
-         <div>
+
           <button type="submit">lisää</button>
         </div>
       </form>    
